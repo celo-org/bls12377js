@@ -1,0 +1,18 @@
+{
+  "name": "bls12377js",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+     "test": "mocha -r ts-node/register test/**/*.ts"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "big-integer": "^1.6.44"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.7"
+  }
+}
