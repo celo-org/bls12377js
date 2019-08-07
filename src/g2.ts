@@ -18,7 +18,7 @@ export default class G2 implements GroupSpec<F2, G2> {
 
   static fromElements(x: F2, y: F2): G2 {
     const elem = new G2()
-    elem.g = Group.fromElements<F2>(G2.b(), x, y, F2.one())
+    elem.g = Group.fromElements<F2>(G2.b(), F2.zero(), F2.one(), x, y, F2.one())
     return elem
   }
 
@@ -37,7 +37,7 @@ export default class G2 implements GroupSpec<F2, G2> {
   }
 
   scalarMult(s: bigInt.BigInteger): G2 {
-    const infinity = Group.fromElements<F2>(G2.b(), F2.zero(), F2.one(), F2.zero())
+    const infinity = Group.fromElements<F2>(G2.b(), F2.zero(), F2.one(), F2.zero(), F2.one(), F2.zero())
     const elem = this.g._scalarMult(G2.b(), infinity, F2.zero(), F2.one(), s)
     const p = new G2()
     p.g = elem

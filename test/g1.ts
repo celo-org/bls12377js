@@ -57,5 +57,4 @@ describe('g1', () => {
       ),
     )).to.be.true
   })
-
 })

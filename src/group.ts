@@ -6,9 +6,10 @@ export default class Group<T extends FieldSpec<T>> {
   private _y: T
   private _z: T
 
-  static fromElements<T extends FieldSpec<T>>(b: T, x: T, y: T, z: T): Group<T> {
-    console.log(`x: ${x}, y: ${y}`)
-    if (!y.multiply(y).equals(x.multiply(x).multiply(x).add(b))) {
+  static fromElements<T extends FieldSpec<T>>(b: T, zero: T, one: T, x: T, y: T, z: T): Group<T> {
+    const isOnCurve = y.multiply(y).equals(x.multiply(x).multiply(x).add(b))
+    const isInfinity = x.equals(zero) && y.equals(one) && z.equals(zero)
+    if (!isOnCurve && !isInfinity) {
       throw new Error('not on curve')
     }
     const p: Group<T> = new Group<T>()
