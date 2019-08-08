@@ -44,6 +44,14 @@ export default class G2 implements GroupSpec<F2, G2> {
     return p
   }
 
+  negate(): G2 {
+    const affineThis = this.toAffine()
+    return G2.fromElements(
+      affineThis.x(),
+      affineThis.y().negate(),
+    )
+  }
+
   equals(p2: G2): boolean {
     return this.g.equals(p2.g)
   }

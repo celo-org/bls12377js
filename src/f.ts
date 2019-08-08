@@ -5,12 +5,19 @@ export default class F implements FieldSpec<F> {
   private num: bigInt.BigInteger
 
   static fromString(num: string, base?: number): F {
+    const numBig = bigInt(num, base)
+    if (numBig.compare(Defs.modulus) > 0) {
+      throw new Error('number too big')
+    }
     const f: F = new F()
-    f.num = bigInt(num, base).mod(Defs.modulus)
+    f.num = numBig
     return f.makePositive()
   }
 
   static fromBig(num: bigInt.BigInteger): F {
+    if (num.compare(Defs.modulus) > 0) {
+      throw new Error('number too big')
+    }
     const f: F = new F()
     f.num = bigInt(num)
 
@@ -48,7 +55,7 @@ export default class F implements FieldSpec<F> {
     return f
   }
 
-  private toBig(): bigInt.BigInteger {
+  toBig(): bigInt.BigInteger {
     return bigInt(this.num)
   }
 
@@ -59,44 +66,45 @@ export default class F implements FieldSpec<F> {
     if (!this.power(pminus1over2).equals(one)) {
       throw new Error('doesn\'t have a square root')
     }
-    let Q = Defs.modulus.subtract(1)
-    let S = bigInt(0)
-    while (Q.isEven()) {
-      S = S.next()
-      Q = Q.over(2)
+    let t = Defs.modulus.subtract(1)
+    let s = bigInt(0)
+    while (t.isEven()) {
+      s = s.next()
+      t = t.over(2)
+    }
+    let z = F.fromBig(Defs.nonresidue).power(t)
+
+    const two = bigInt(2)
+    let w = this.power(t.subtract(1).over(2))
+    let a0 = (w.multiply(w).multiply(this)).power(two.pow(s.subtract(1)))
+    if (a0.equals(one.negate())) {
+      throw new Error('doesn\'t have a square root')
     }
 
-    let M = bigInt(S)
-    let c = F.fromBig(Defs.nonresidue).power(Q)
-    let t = this.power(Q)
-    let R = this.power(Q.add(1).over(2))
-    const two = bigInt(2)
+    let v = bigInt(s)
+    let x = this.multiply(w)
+    let b = x.multiply(w)
 
-    while (true) {
-      if (t.equals(zero)) {
-        return zero
-      }
-      if (t.equals(one)) {
-        return R
-      }
 
-      let tt = t.clone()
-      let i;
-      for (i = bigInt(0); i.compare(M) < 0; i = i.next()) {
-        if (tt.equals(one)) {
+    while (!b.equals(one)) {
+      let bb = b.clone()
+      let k;
+      for (k = bigInt(0); k.compare(s) < 0; k = k.next()) {
+        if (bb.equals(one)) {
           break
         }
-        tt = tt.power(two)
+        bb = bb.power(two)
       }
-      if (!tt.equals(one)) {
+      if (!bb.equals(one)) {
         throw new Error('couldn\'t find a square root')
       }
-      let b = c.power(two.pow(M.subtract(i).subtract(1)))
-      M = bigInt(i)
-      c = b.power(two)
-      t = t.multiply(c)
-      R = R.multiply(b)
+      w = z.power(two.pow(v.subtract(k).subtract(1)))
+      z = w.multiply(w)
+      b = b.multiply(z)
+      x = x.multiply(w)
+      v = bigInt(k)
     }
+    return x
   }
 
   inverse(): F {

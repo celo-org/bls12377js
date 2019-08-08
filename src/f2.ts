@@ -80,7 +80,7 @@ export default class F2 implements FieldSpec<F2> {
     alpha = alpha.sqrt()
     let delta = this.c0.add(alpha).multiply(twoinv)
     if (!delta.power(pminus1over2).equals(one)) {
-      delta = this.c0.subtract(alpha).multiply(twoinv)
+      delta = delta.subtract(alpha)
     }
 
     const c0 = delta.sqrt()
@@ -121,7 +121,7 @@ export default class F2 implements FieldSpec<F2> {
     )
   }
 
-  private toFs(): F[] {
+  toFs(): F[] {
     return [this.c0.clone(), this.c1.clone()]
   }
 

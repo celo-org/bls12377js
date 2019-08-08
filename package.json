@@ -10,7 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "big-integer": "^1.6.44",
-    "blake2s-js": "^1.3.0"
+    "blake2s-js": "^1.3.0",
+    "buffer-reverse": "^1.0.1"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",

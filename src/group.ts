@@ -122,9 +122,8 @@ export default class Group<T extends FieldSpec<T>> {
   }
 
   equals(p2: Group<T>): boolean {
-    const pAffine = this.toAffine()
-    const p2Affine = p2.toAffine()
-    return (pAffine.x().equals(p2Affine.x()) && pAffine.y().equals(p2Affine.y()))
+    return this.x().multiply(p2.z()).equals(p2.x().multiply(this.z())) &&
+      this.y().multiply(p2.z()).equals(p2.y().multiply(this.z()))
   }
 
   equalsProjective(p2: Group<T>): boolean {
