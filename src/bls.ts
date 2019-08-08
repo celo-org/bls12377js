@@ -112,10 +112,7 @@ export function signPoP(privateKey: Buffer): Buffer {
   const scalingFactor = Defs.blsX.multiply(Defs.blsX).subtract(bigInt(1)).multiply(3).multiply(Defs.g2Cofactor)
   const signedMessageScaled = signedMessage.scalarMult(scalingFactor)
   const signatureBytes = compressG2(signedMessageScaled)
-  return Buffer.concat([
-    publicKeyBytes,
-    signatureBytes,
-  ])
+  return signatureBytes
 }
 
 export function crh(message: Buffer): Buffer {
