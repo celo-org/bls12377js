@@ -5,7 +5,7 @@ import F2 from './f2'
 import G1 from './g1'
 import G2 from './g2'
 
-import BLAKE2s from 'blake2s-js'
+const BLAKE2s = require('blake2s-js')
 
 export function reverse(src: Buffer) {
   const buffer = new Buffer(src.length)

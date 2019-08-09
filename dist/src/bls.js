@@ -6,8 +6,7 @@ var f_1 = require("./f");
 var f2_1 = require("./f2");
 var g1_1 = require("./g1");
 var g2_1 = require("./g2");
-var BLAKE2sImport = require("blake2s-js");
-var BLAKE2s = BLAKE2sImport;
+var BLAKE2s = require('blake2s-js');
 function reverse(src) {
     var buffer = new Buffer(src.length);
     for (var i = 0, j = src.length - 1; i <= j; ++i, --j) {
