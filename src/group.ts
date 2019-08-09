@@ -1,10 +1,15 @@
-import * as bigInt from 'big-integer'
+import bigInt = require('big-integer')
 import { FieldSpec } from './defs'
 
 export default class Group<T extends FieldSpec<T>> {
+  // @ts-ignore
   private _x: T
+  // @ts-ignore
   private _y: T
+  // @ts-ignore
   private _z: T
+
+  private constructor() {}
 
   static fromElements<T extends FieldSpec<T>>(b: T, zero: T, one: T, x: T, y: T, z: T): Group<T> {
     const isOnCurve = y.multiply(y).equals(x.multiply(x).multiply(x).add(b))

@@ -1,5 +1,5 @@
 import { F } from '..'
-import * as bigInt from 'big-integer'
+import bigInt = require('big-integer')
 import { expect } from 'chai'
 import 'mocha'
 

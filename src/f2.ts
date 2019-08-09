@@ -1,10 +1,14 @@
-import * as bigInt from 'big-integer'
+import bigInt = require('big-integer')
 import { Defs, FieldSpec } from './defs'
 import F from './f'
 
 export default class F2 implements FieldSpec<F2> {
+  // @ts-ignore
   private c0: F
+  // @ts-ignore
   private c1: F
+
+  private constructor() {}
 
   static fromElements(c0: F, c1: F): F2 {
     const f: F2 = new F2()
