@@ -173,6 +173,7 @@ export function tryAndIncrement(key: Buffer, domain: Buffer, message: Buffer): G
       continue
     }
     const possibleX1Bytes = hash.slice(hash.length/2, hash.length)
+    const greatest = possibleX1Bytes[possibleX1Bytes.length - 1] & 2
     possibleX1Bytes[possibleX1Bytes.length - 1] &= 1
     const possibleX1Big = bufferToBig(possibleX1Bytes);
     let possibleX1
@@ -196,12 +197,20 @@ export function tryAndIncrement(key: Buffer, domain: Buffer, message: Buffer): G
 
       const negy0 = negy[0].toBig()
       const negy1 = negy[1].toBig()
+
+      let negyIsGreatest = false
       if (negy1.compare(getMiddlePoint()) > 0) {
-        y = y.negate()
+        negyIsGreatest = true
       } else if (
         (negy1.compare(getMiddlePoint()) == 0) &&
         (negy0.compare(getMiddlePoint()) > 0)
       ) {
+        negyIsGreatest = true
+      }
+      if (negyIsGreatest && greatest) {
+        y = y.negate()
+      }
+      if (!negyIsGreatest && !greatest) {
         y = y.negate()
       }
     } catch(e) {
