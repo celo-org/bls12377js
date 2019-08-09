@@ -150,6 +150,7 @@ function tryAndIncrement(key, domain, message) {
             continue;
         }
         var possibleX1Bytes = hash.slice(hash.length / 2, hash.length);
+        var greatest = (possibleX1Bytes[possibleX1Bytes.length - 1] & 2) == 2;
         possibleX1Bytes[possibleX1Bytes.length - 1] &= 1;
         var possibleX1Big = bufferToBig(possibleX1Bytes);
         var possibleX1 = void 0;
@@ -166,11 +167,18 @@ function tryAndIncrement(key, domain, message) {
             var negy = y.negate().toFs();
             var negy0 = negy[0].toBig();
             var negy1 = negy[1].toBig();
+            var negyIsGreatest = false;
             if (negy1.compare(getMiddlePoint()) > 0) {
-                y = y.negate();
+                negyIsGreatest = true;
             }
             else if ((negy1.compare(getMiddlePoint()) == 0) &&
                 (negy0.compare(getMiddlePoint()) > 0)) {
+                negyIsGreatest = true;
+            }
+            if (negyIsGreatest && greatest) {
+                y = y.negate();
+            }
+            if (!negyIsGreatest && !greatest) {
                 y = y.negate();
             }
         }

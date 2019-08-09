@@ -37,7 +37,7 @@ describe('bls', function () {
         var publicKeyHex = __1.BLS.privateToPublicBytes(privateKey).toString('hex');
         chai_1.expect(publicKeyHex).to.equal('c91e3ae9b4380143652cf199faeeab471e639c969e55275cf3bae66aad5d1c6d6f8bab3cb43fd20a78297cb0a8afe880');
         var popHex = __1.BLS.signPoP(privateKey).toString('hex');
-        chai_1.expect(popHex).to.equal('e9d004d288c88ed669f6156951d736c5e51d79ebb8627ebd16fc24ab625270a44ebd1c9bbb90df1530a68f0e945967006b6b374b30f17389f3e2dedf9a2db8c33abfbc3331d3654702f2e27536cb914088db2f31696c10bd2d53d35b8fb7e700');
+        chai_1.expect(popHex).to.equal('e9d004d288c88ed669f6156951d736c5e51d79ebb8627ebd16fc24ab625270a44ebd1c9bbb90df1530a68f0e945967006b6b374b30f17389f3e2dedf9a2db8c33abfbc3331d3654702f2e27536cb914088db2f31696c10bd2d53d35b8fb7e780');
     });
     it('should test many proofs of possession', function () {
         var csvContents = fs.readFileSync('test/pops.csv').toString();
