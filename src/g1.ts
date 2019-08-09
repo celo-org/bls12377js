@@ -5,8 +5,6 @@ import { Defs, GroupSpec } from './defs'
 
 export default class G1 implements GroupSpec<F, G1> {
   private g: Group<F>
-  private zero: F
-  private one: F
 
   private static b(): F {
     return F.fromBig(Defs.b)

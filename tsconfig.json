@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "outDir": "dist"
+    "outDir": "dist",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strictPropertyInitialization": false,
+    "strict": true
   },
   "exclude": [
     "node_modules",

@@ -2,13 +2,21 @@
 exports.__esModule = true;
 var defs_1 = require("./defs");
 var bigInt = require("big-integer");
-var reverse = require("buffer-reverse");
 var f_1 = require("./f");
 var f2_1 = require("./f2");
 var g1_1 = require("./g1");
 var g2_1 = require("./g2");
 var BLAKE2sImport = require("blake2s-js");
 var BLAKE2s = BLAKE2sImport;
+function reverse(src) {
+    var buffer = new Buffer(src.length);
+    for (var i = 0, j = src.length - 1; i <= j; ++i, --j) {
+        buffer[i] = src[j];
+        buffer[j] = src[i];
+    }
+    return buffer;
+}
+exports.reverse = reverse;
 function bufferToArray(buf) {
     return buf.toJSON().data;
 }

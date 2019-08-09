@@ -49,7 +49,7 @@ describe('bls', function () {
                 var publicKeyHex = __1.BLS.privateToPublicBytes(privateKey).toString('hex');
                 chai_1.expect(publicKeyHex).to.equal(line[1]);
                 var popHex = __1.BLS.signPoP(privateKey).toString('hex');
-                chai_1.expect(popHex).to.equal(line[1] + line[2]);
+                chai_1.expect(popHex).to.equal(line[2]);
             }
             catch (e) {
                 console.log("error: " + e);

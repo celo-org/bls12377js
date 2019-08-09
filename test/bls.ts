@@ -1,4 +1,4 @@
-import { BLS, F, G1 } from '..'
+import { BLS } from '..'
 import * as bigInt from 'big-integer'
 import * as fs from 'fs';
 import { expect } from 'chai'
