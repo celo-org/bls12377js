@@ -62,7 +62,6 @@ export default class F implements FieldSpec<F> {
   sqrt(): F {
     const pminus1over2 = Defs.modulus.subtract(1).over(2)
     const one = F.fromBig(bigInt(1))
-    const zero = F.fromBig(bigInt(0))
     if (!this.power(pminus1over2).equals(one)) {
       throw new Error('doesn\'t have a square root')
     }

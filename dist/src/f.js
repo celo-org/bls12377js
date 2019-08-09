@@ -53,7 +53,6 @@ var F = /** @class */ (function () {
     F.prototype.sqrt = function () {
         var pminus1over2 = defs_1.Defs.modulus.subtract(1).over(2);
         var one = F.fromBig(bigInt(1));
-        var zero = F.fromBig(bigInt(0));
         if (!this.power(pminus1over2).equals(one)) {
             throw new Error('doesn\'t have a square root');
         }

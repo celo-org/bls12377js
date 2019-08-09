@@ -1,6 +1,5 @@
 import { Defs } from './defs'
 import * as bigInt from 'big-integer'
-import * as reverse from 'buffer-reverse'
 import F from './f'
 import F2 from './f2'
 import G1 from './g1'
@@ -8,6 +7,17 @@ import G2 from './g2'
 
 import * as BLAKE2sImport from 'blake2s-js'
 const BLAKE2s: any = BLAKE2sImport
+
+export function reverse(src: Buffer) {
+  const buffer = new Buffer(src.length)
+
+  for (let i = 0, j = src.length - 1; i <= j; ++i, --j) {
+    buffer[i] = src[j]
+    buffer[j] = src[i]
+  }
+
+  return buffer
+}
 
 export function bufferToArray(buf: Buffer): number[] {
   return buf.toJSON().data

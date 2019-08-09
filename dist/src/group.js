@@ -54,12 +54,11 @@ var Group = /** @class */ (function () {
         p3._z = Z3;
         return p3;
     };
-    Group.prototype._double = function (b, zero, one) {
+    Group.prototype._double = function (_, zero, one) {
         if (this.isInfinity(zero, one)) {
             return this.clone();
         }
         var XX = this.x().multiply(this.x());
-        var ZZ = this.z().multiply(this.z());
         var w = XX.add(XX).add(XX);
         var y1z1 = this.y().multiply(this.z());
         var s = y1z1.add(y1z1);

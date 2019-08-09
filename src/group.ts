@@ -1,5 +1,5 @@
 import * as bigInt from 'big-integer'
-import { Defs, FieldSpec } from './defs'
+import { FieldSpec } from './defs'
 
 export default class Group<T extends FieldSpec<T>> {
   private _x: T
@@ -62,12 +62,11 @@ export default class Group<T extends FieldSpec<T>> {
     return p3
   }
 
-  _double(b: T, zero: T, one: T): Group<T> {
+  _double(_: T, zero: T, one: T): Group<T> {
     if (this.isInfinity(zero, one)) {
       return this.clone()
     }
     const XX = this.x().multiply(this.x())
-    const ZZ = this.z().multiply(this.z())
     const w = XX.add(XX).add(XX)
     const y1z1 = this.y().multiply(this.z())
     const s = y1z1.add(y1z1)
