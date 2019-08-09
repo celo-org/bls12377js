@@ -2,7 +2,8 @@
   "name": "bls12377js",
   "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "mocha -r ts-node/register test/**/*.ts --timeout 600000"
   },

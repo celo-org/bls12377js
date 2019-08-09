@@ -54,7 +54,7 @@ describe('bls', () => {
         const publicKeyHex = BLS.privateToPublicBytes(privateKey).toString('hex')
         expect(publicKeyHex).to.equal(line[1])
         const popHex = BLS.signPoP(privateKey).toString('hex')
-        expect(popHex).to.equal(line[1] + line[2])
+        expect(popHex).to.equal(line[2])
       } catch(e) {
         console.log(`error: ${e}`)
         console.log(`problematic line: ${line}`)
