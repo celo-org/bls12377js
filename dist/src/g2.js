@@ -1,8 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 exports.__esModule = true;
-var f_1 = require("./f");
-var f2_1 = require("./f2");
-var group_1 = require("./group");
+var f_1 = __importDefault(require("./f"));
+var f2_1 = __importDefault(require("./f2"));
+var group_1 = __importDefault(require("./group"));
 var defs_1 = require("./defs");
 var G2 = /** @class */ (function () {
     function G2() {

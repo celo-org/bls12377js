@@ -1,8 +1,11 @@
-import * as bigInt from 'big-integer'
+import bigInt = require('big-integer')
 import { Defs, FieldSpec } from './defs'
 
 export default class F implements FieldSpec<F> {
+  // @ts-ignore
   private num: bigInt.BigInteger
+
+  private constructor() {}
 
   static fromString(num: string, base?: number): F {
     const numBig = bigInt(num, base)

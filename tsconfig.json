@@ -4,7 +4,8 @@
     "outDir": "dist",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "strictPropertyInitialization": false,
+    "strictPropertyInitialization": true,
+    "esModuleInterop": true,
     "strict": true
   },
   "exclude": [

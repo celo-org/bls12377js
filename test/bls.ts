@@ -1,5 +1,5 @@
 import { BLS } from '..'
-import * as bigInt from 'big-integer'
+import bigInt = require('big-integer')
 import * as fs from 'fs';
 import { expect } from 'chai'
 import 'mocha'
