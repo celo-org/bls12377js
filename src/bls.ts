@@ -173,7 +173,7 @@ export function tryAndIncrement(key: Buffer, domain: Buffer, message: Buffer): G
       continue
     }
     const possibleX1Bytes = hash.slice(hash.length/2, hash.length)
-    const greatest = possibleX1Bytes[possibleX1Bytes.length - 1] & 2
+    const greatest = (possibleX1Bytes[possibleX1Bytes.length - 1] & 2) == 2
     possibleX1Bytes[possibleX1Bytes.length - 1] &= 1
     const possibleX1Big = bufferToBig(possibleX1Bytes);
     let possibleX1
