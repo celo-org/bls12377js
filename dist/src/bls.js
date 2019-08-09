@@ -2,13 +2,6 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 exports.__esModule = true;
 var defs_1 = require("./defs");
 var bigInt = require("big-integer");
@@ -16,8 +9,7 @@ var f_1 = __importDefault(require("./f"));
 var f2_1 = __importDefault(require("./f2"));
 var g1_1 = __importDefault(require("./g1"));
 var g2_1 = __importDefault(require("./g2"));
-var BLAKE2sImport = __importStar(require("blake2s-js"));
-var BLAKE2s = BLAKE2sImport;
+var BLAKE2s = require('blake2s-js');
 function reverse(src) {
     var buffer = new Buffer(src.length);
     for (var i = 0, j = src.length - 1; i <= j; ++i, --j) {
