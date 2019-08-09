@@ -1,11 +1,14 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 exports.__esModule = true;
 var defs_1 = require("./defs");
 var bigInt = require("big-integer");
-var f_1 = require("./f");
-var f2_1 = require("./f2");
-var g1_1 = require("./g1");
-var g2_1 = require("./g2");
+var f_1 = __importDefault(require("./f"));
+var f2_1 = __importDefault(require("./f2"));
+var g1_1 = __importDefault(require("./g1"));
+var g2_1 = __importDefault(require("./g2"));
 var BLAKE2s = require('blake2s-js');
 function reverse(src) {
     var buffer = new Buffer(src.length);
