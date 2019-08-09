@@ -1,5 +1,5 @@
 import { Defs } from './defs'
-import * as bigInt from 'big-integer'
+import bigInt = require('big-integer')
 import F from './f'
 import F2 from './f2'
 import G1 from './g1'

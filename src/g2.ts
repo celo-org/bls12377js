@@ -1,11 +1,14 @@
 import F from './f'
 import F2 from './f2'
 import Group from './group'
-import * as bigInt from 'big-integer'
+import bigInt = require('big-integer')
 import { Defs, GroupSpec } from './defs'
 
 export default class G2 implements GroupSpec<F2, G2> {
+  // @ts-ignore
   private g: Group<F2>
+
+  private constructor() {}
 
   private static b(): F2 {
     return F2.fromElements(

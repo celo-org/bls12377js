@@ -1,8 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 exports.__esModule = true;
 var bigInt = require("big-integer");
 var defs_1 = require("./defs");
-var f_1 = require("./f");
+var f_1 = __importDefault(require("./f"));
 var F2 = /** @class */ (function () {
     function F2() {
     }

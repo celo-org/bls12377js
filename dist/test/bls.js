@@ -1,8 +1,15 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 exports.__esModule = true;
 var __1 = require("..");
 var bigInt = require("big-integer");
-var fs = require("fs");
+var fs = __importStar(require("fs"));
 var chai_1 = require("chai");
 require("mocha");
 describe('bls', function () {
