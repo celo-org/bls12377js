@@ -1,0 +1,38 @@
+version: 2
+
+defaults: &defaults
+  docker:
+    - image: celohq/node8:gcloud
+  working_directory: ~/bls12377js
+
+jobs:
+  unit-tests:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - run: cd ~/bls12377js && npm test
+
+  checkout-and-install:
+    <<: *defaults
+    steps:
+      - checkout
+      -run:
+        name: Install
+        command: |
+            set -euo pipefail
+            cd ~/bls12377js
+            npm install
+            tsc
+      - persist_to_workspace:
+          root: .
+          paths: .
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - checkout-and-install
+      - unit-tests:
+          requires:
+            - checkout-and-install
