@@ -147,7 +147,7 @@ function xof(domain, messageHash, xofDigestLength) {
 }
 exports.xof = xof;
 function tryAndIncrement(domain, message) {
-    var xofDigestLength = 768;
+    var xofDigestLength = 768 / 8;
     var messageHash = crh(domain, message, xofDigestLength);
     for (var i = 0; i < 256; i++) {
         var counter = new Buffer(1);

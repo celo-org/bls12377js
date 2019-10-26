@@ -169,7 +169,7 @@ export function xof(domain: Buffer, messageHash: Buffer, xofDigestLength: number
 }
 
 export function tryAndIncrement(domain: Buffer, message: Buffer): G2 {
-  const xofDigestLength = 768
+  const xofDigestLength = 768/8
   const messageHash = crh(domain, message, xofDigestLength)
   for (let i = 0; i < 256; i++) {
     const counter = new Buffer(1)
