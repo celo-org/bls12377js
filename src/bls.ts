@@ -151,7 +151,7 @@ export function xof(domain: Buffer, messageHash: Buffer, xofDigestLength: number
     }
 
     const hash = Buffer.from(
-      (new BLAKE2s(32, { 
+      (new BLAKE2s(hashLength, { 
         personalization: domain,
         xofDigestLength: xofDigestLength,
         maxLeafLength: 32,
@@ -169,14 +169,15 @@ export function xof(domain: Buffer, messageHash: Buffer, xofDigestLength: number
 }
 
 export function tryAndIncrement(domain: Buffer, message: Buffer): G2 {
-  const messageHash = crh(message)
+  const xofDigestLength = 768
+  const messageHash = crh(domain, message, xofDigestLength)
   for (let i = 0; i < 256; i++) {
     const counter = new Buffer(1)
     counter[0] = i
     const hash = xof(domain, Buffer.concat([
       counter,
       messageHash,
-    ]))
+    ]), xofDigestLength)
     const possibleX0Bytes = hash.slice(0, hash.length/2)
     possibleX0Bytes[possibleX0Bytes.length - 1] &= 1
     const possibleX0Big = bufferToBig(possibleX0Bytes)
