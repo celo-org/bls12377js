@@ -45,7 +45,7 @@ describe('bls', function () {
         var publicKeyHex = __1.BLS.privateToPublicBytes(privateKey).toString('hex');
         chai_1.expect(publicKeyHex).to.equal('c91e3ae9b4380143652cf199faeeab471e639c969e55275cf3bae66aad5d1c6d6f8bab3cb43fd20a78297cb0a8afe880');
         var popHex = __1.BLS.signPoP(privateKey, address).toString('hex');
-        chai_1.expect(popHex).to.equal('e9d004d288c88ed669f6156951d736c5e51d79ebb8627ebd16fc24ab625270a44ebd1c9bbb90df1530a68f0e945967006b6b374b30f17389f3e2dedf9a2db8c33abfbc3331d3654702f2e27536cb914088db2f31696c10bd2d53d35b8fb7e780');
+        chai_1.expect(popHex).to.equal('5ce47b7cd8143dfa28687ad5b5c1b586ff955e5d97511c772db5f0c860daf7a72590b6b4f6bf261de81e7deb8dec1e01c404f122be49b3ff84e0c72bf7ffdfac7465046981beb368bf5041cc3a598e831f99960d81210135871c8f6ac357a180');
     });
     it('should test many proofs of possession', function () {
         var csvContents = fs.readFileSync('test/pops.csv').toString();
@@ -63,7 +63,7 @@ describe('bls', function () {
             catch (e) {
                 console.log("error: " + e);
                 console.log("problematic line: " + line);
-                break;
+                throw e;
             }
         }
     });
