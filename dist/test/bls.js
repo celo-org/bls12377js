@@ -45,7 +45,7 @@ describe('bls', function () {
         var publicKeyHex = __1.BLS.privateToPublicBytes(privateKey).toString('hex');
         chai_1.expect(publicKeyHex).to.equal('c91e3ae9b4380143652cf199faeeab471e639c969e55275cf3bae66aad5d1c6d6f8bab3cb43fd20a78297cb0a8afe880');
         var popHex = __1.BLS.signPoP(privateKey, address).toString('hex');
-        chai_1.expect(popHex).to.equal('5ce47b7cd8143dfa28687ad5b5c1b586ff955e5d97511c772db5f0c860daf7a72590b6b4f6bf261de81e7deb8dec1e01c404f122be49b3ff84e0c72bf7ffdfac7465046981beb368bf5041cc3a598e831f99960d81210135871c8f6ac357a180');
+        chai_1.expect(popHex).to.equal('18a20c95582661e366978a7de191ee195685c73b6f5f9ecfd160b10733a7048ab5ab381c381da69cb1de7e530901d500abf4da4a177a6a250d9f4be98e4df21bc9d54f4d4318adaa3eab61ae139e1ec4afc410c44446eab4130196e3dc983201');
     });
     it('should test many proofs of possession', function () {
         var csvContents = fs.readFileSync('test/pops.csv').toString();
@@ -56,7 +56,7 @@ describe('bls', function () {
                 var privateKey = new Buffer(line[0], 'hex');
                 var publicKeyHex = __1.BLS.privateToPublicBytes(privateKey).toString('hex');
                 chai_1.expect(publicKeyHex).to.equal(line[1]);
-                var address = new Buffer('60515f8c59451e04ab4b22b3fc9a196b2ad354e6', 'hex');
+                var address = new Buffer('47e172F6CfB6c7D01C1574fa3E2Be7CC73269D95', 'hex');
                 var popHex = __1.BLS.signPoP(privateKey, address).toString('hex');
                 chai_1.expect(popHex).to.equal(line[2]);
             }

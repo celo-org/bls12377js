@@ -114,18 +114,11 @@ function crh(domain, message, xofDigestLength) {
     }))
         .update(message)
         .digest());
-    return new Buffer(0);
 }
 exports.crh = crh;
 function xof(domain, messageHash, xofDigestLength) {
     var result = new Buffer(0);
     for (var i = 0; i < 3; i++) {
-        var counter = new Buffer(1);
-        counter[0] = i;
-        var buf = Buffer.concat([
-            counter,
-            messageHash,
-        ]);
         var hashLength = 32;
         if (i == 2 && (xofDigestLength % 32 !== 0)) {
             hashLength = xofDigestLength % 32;
@@ -139,7 +132,7 @@ function xof(domain, messageHash, xofDigestLength) {
             maxDepth: 0,
             nodeOffset: i
         }))
-            .update(buf)
+            .update(messageHash)
             .digest());
         result = Buffer.concat([result, hash]);
     }
@@ -148,14 +141,15 @@ function xof(domain, messageHash, xofDigestLength) {
 exports.xof = xof;
 function tryAndIncrement(domain, message) {
     var xofDigestLength = 768 / 8;
-    var messageHash = crh(domain, message, xofDigestLength);
     for (var i = 0; i < 256; i++) {
         var counter = new Buffer(1);
         counter[0] = i;
-        var hash = xof(domain, Buffer.concat([
+        var messageWithCounter = Buffer.concat([
             counter,
-            messageHash,
-        ]), xofDigestLength);
+            message,
+        ]);
+        var messageHash = crh(domain, messageWithCounter, xofDigestLength);
+        var hash = xof(domain, messageHash, xofDigestLength);
         var possibleX0Bytes = hash.slice(0, hash.length / 2);
         possibleX0Bytes[possibleX0Bytes.length - 1] &= 1;
         var possibleX0Big = bufferToBig(possibleX0Bytes);
