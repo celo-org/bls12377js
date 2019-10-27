@@ -109,13 +109,11 @@ export function privateToPublicBytes(privateKey: Buffer): Buffer {
   return publicKeyBytes
 }
 
-export function signPoP(privateKey: Buffer): Buffer {
+export function signPoP(privateKey: Buffer, address: Buffer): Buffer {
   const privateKeyBig = bufferToBig(privateKey)
-  const publicKeyBytes = privateToPublicBytes(privateKey)
   const messagePoint = tryAndIncrement(
-    new Buffer('096b36a5804bfacef1691e173c366a47ff5ba84a44f26ddd7e8d9f79d5b42df0'),
     new Buffer('ULforpop'),
-    publicKeyBytes,
+    address,
   )
   const signedMessage = messagePoint.scalarMult(privateKeyBig)
   const scalingFactor = Defs.blsX.multiply(Defs.blsX).subtract(bigInt(1)).multiply(3).multiply(Defs.g2Cofactor)
@@ -124,28 +122,37 @@ export function signPoP(privateKey: Buffer): Buffer {
   return signatureBytes
 }
 
-export function crh(message: Buffer): Buffer {
+export function crh(domain: Buffer, message: Buffer, xofDigestLength: number): Buffer {
   return Buffer.from(
-    (new BLAKE2s(32))
+    (new BLAKE2s(32, {
+      nodeOffset: 0,
+      xofDigestLength: xofDigestLength,
+      personalization: domain,
+    }))
     .update(message)
     .digest()
   )
-  return new Buffer(0)
 }
 
-export function prf(key: Buffer, domain: Buffer, messageHash: Buffer): Buffer {
+export function xof(domain: Buffer, messageHash: Buffer, xofDigestLength: number): Buffer {
   let result = new Buffer(0)
   for (let i = 0; i < 3; i++) {
-    const counter = new Buffer(1)
-    counter[0] = i
-    const buf = Buffer.concat([
-      key,
-      counter,
-      messageHash,
-    ])
+    let hashLength = 32
+    if (i == 2 && (xofDigestLength % 32 !== 0)) {
+      hashLength = xofDigestLength % 32
+    }
+
     const hash = Buffer.from(
-      (new BLAKE2s(32, { personalization: domain }))
-      .update(buf)
+      (new BLAKE2s(hashLength, { 
+        personalization: domain,
+        xofDigestLength: xofDigestLength,
+        maxLeafLength: 32,
+        innerHashLength: 32,
+        fanOut: 0,
+        maxDepth: 0,
+        nodeOffset: i,
+      }))
+      .update(messageHash)
       .digest()
     )
     result = Buffer.concat([result, hash])
@@ -153,18 +160,20 @@ export function prf(key: Buffer, domain: Buffer, messageHash: Buffer): Buffer {
   return result
 }
 
-export function tryAndIncrement(key: Buffer, domain: Buffer, message: Buffer): G2 {
-  const messageHash = crh(message)
+export function tryAndIncrement(domain: Buffer, message: Buffer): G2 {
+  const xofDigestLength = 768/8
   for (let i = 0; i < 256; i++) {
     const counter = new Buffer(1)
     counter[0] = i
-    const hash = prf(key, domain, Buffer.concat([
+    const messageWithCounter = Buffer.concat([
       counter,
-      messageHash,
-    ]))
+      message,
+    ])
+    const messageHash = crh(domain, messageWithCounter, xofDigestLength)
+    const hash = xof(domain, messageHash, xofDigestLength)
     const possibleX0Bytes = hash.slice(0, hash.length/2)
     possibleX0Bytes[possibleX0Bytes.length - 1] &= 1
-    const possibleX0Big = bufferToBig(possibleX0Bytes);
+    const possibleX0Big = bufferToBig(possibleX0Bytes)
     let possibleX0
     try {
       possibleX0 = F.fromBig(possibleX0Big)
@@ -174,7 +183,7 @@ export function tryAndIncrement(key: Buffer, domain: Buffer, message: Buffer): G
     const possibleX1Bytes = hash.slice(hash.length/2, hash.length)
     const greatest = (possibleX1Bytes[possibleX1Bytes.length - 1] & 2) == 2
     possibleX1Bytes[possibleX1Bytes.length - 1] &= 1
-    const possibleX1Big = bufferToBig(possibleX1Bytes);
+    const possibleX1Big = bufferToBig(possibleX1Bytes)
     let possibleX1
     try {
       possibleX1 = F.fromBig(possibleX1Big)

@@ -38,10 +38,11 @@ describe('bls', () => {
 
   it('should test proof of possession', () => {
     const privateKey = new Buffer('60515f8c59451e04ab4b22b3fc9a196b2ad354e61aeca61256ab3d7b3468100b', 'hex')
+    const address = new Buffer('60515f8c59451e04ab4b22b3fc9a196b2ad354e6', 'hex')
     const publicKeyHex = BLS.privateToPublicBytes(privateKey).toString('hex')
     expect(publicKeyHex).to.equal('c91e3ae9b4380143652cf199faeeab471e639c969e55275cf3bae66aad5d1c6d6f8bab3cb43fd20a78297cb0a8afe880')
-    const popHex = BLS.signPoP(privateKey).toString('hex')
-    expect(popHex).to.equal('e9d004d288c88ed669f6156951d736c5e51d79ebb8627ebd16fc24ab625270a44ebd1c9bbb90df1530a68f0e945967006b6b374b30f17389f3e2dedf9a2db8c33abfbc3331d3654702f2e27536cb914088db2f31696c10bd2d53d35b8fb7e780')
+    const popHex = BLS.signPoP(privateKey, address).toString('hex')
+    expect(popHex).to.equal('18a20c95582661e366978a7de191ee195685c73b6f5f9ecfd160b10733a7048ab5ab381c381da69cb1de7e530901d500abf4da4a177a6a250d9f4be98e4df21bc9d54f4d4318adaa3eab61ae139e1ec4afc410c44446eab4130196e3dc983201')
   })
 
   it('should test many proofs of possession', () => {
@@ -53,12 +54,13 @@ describe('bls', () => {
         const privateKey = new Buffer(line[0], 'hex')
         const publicKeyHex = BLS.privateToPublicBytes(privateKey).toString('hex')
         expect(publicKeyHex).to.equal(line[1])
-        const popHex = BLS.signPoP(privateKey).toString('hex')
+        const address = new Buffer('47e172F6CfB6c7D01C1574fa3E2Be7CC73269D95', 'hex')
+        const popHex = BLS.signPoP(privateKey, address).toString('hex')
         expect(popHex).to.equal(line[2])
       } catch(e) {
         console.log(`error: ${e}`)
         console.log(`problematic line: ${line}`)
-        break
+        throw e;
       }
     }
   })

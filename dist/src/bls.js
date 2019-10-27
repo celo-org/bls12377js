@@ -96,10 +96,9 @@ function privateToPublicBytes(privateKey) {
     return publicKeyBytes;
 }
 exports.privateToPublicBytes = privateToPublicBytes;
-function signPoP(privateKey) {
+function signPoP(privateKey, address) {
     var privateKeyBig = bufferToBig(privateKey);
-    var publicKeyBytes = privateToPublicBytes(privateKey);
-    var messagePoint = tryAndIncrement(new Buffer('096b36a5804bfacef1691e173c366a47ff5ba84a44f26ddd7e8d9f79d5b42df0'), new Buffer('ULforpop'), publicKeyBytes);
+    var messagePoint = tryAndIncrement(new Buffer('ULforpop'), address);
     var signedMessage = messagePoint.scalarMult(privateKeyBig);
     var scalingFactor = defs_1.Defs.blsX.multiply(defs_1.Defs.blsX).subtract(bigInt(1)).multiply(3).multiply(defs_1.Defs.g2Cofactor);
     var signedMessageScaled = signedMessage.scalarMult(scalingFactor);
@@ -107,40 +106,50 @@ function signPoP(privateKey) {
     return signatureBytes;
 }
 exports.signPoP = signPoP;
-function crh(message) {
-    return Buffer.from((new BLAKE2s(32))
+function crh(domain, message, xofDigestLength) {
+    return Buffer.from((new BLAKE2s(32, {
+        nodeOffset: 0,
+        xofDigestLength: xofDigestLength,
+        personalization: domain
+    }))
         .update(message)
         .digest());
-    return new Buffer(0);
 }
 exports.crh = crh;
-function prf(key, domain, messageHash) {
+function xof(domain, messageHash, xofDigestLength) {
     var result = new Buffer(0);
     for (var i = 0; i < 3; i++) {
-        var counter = new Buffer(1);
-        counter[0] = i;
-        var buf = Buffer.concat([
-            key,
-            counter,
-            messageHash,
-        ]);
-        var hash = Buffer.from((new BLAKE2s(32, { personalization: domain }))
-            .update(buf)
+        var hashLength = 32;
+        if (i == 2 && (xofDigestLength % 32 !== 0)) {
+            hashLength = xofDigestLength % 32;
+        }
+        var hash = Buffer.from((new BLAKE2s(hashLength, {
+            personalization: domain,
+            xofDigestLength: xofDigestLength,
+            maxLeafLength: 32,
+            innerHashLength: 32,
+            fanOut: 0,
+            maxDepth: 0,
+            nodeOffset: i
+        }))
+            .update(messageHash)
             .digest());
         result = Buffer.concat([result, hash]);
     }
     return result;
 }
-exports.prf = prf;
-function tryAndIncrement(key, domain, message) {
-    var messageHash = crh(message);
+exports.xof = xof;
+function tryAndIncrement(domain, message) {
+    var xofDigestLength = 768 / 8;
     for (var i = 0; i < 256; i++) {
         var counter = new Buffer(1);
         counter[0] = i;
-        var hash = prf(key, domain, Buffer.concat([
+        var messageWithCounter = Buffer.concat([
             counter,
-            messageHash,
-        ]));
+            message,
+        ]);
+        var messageHash = crh(domain, messageWithCounter, xofDigestLength);
+        var hash = xof(domain, messageHash, xofDigestLength);
         var possibleX0Bytes = hash.slice(0, hash.length / 2);
         possibleX0Bytes[possibleX0Bytes.length - 1] &= 1;
         var possibleX0Big = bufferToBig(possibleX0Bytes);
