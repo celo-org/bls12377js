@@ -9,7 +9,7 @@ var f_1 = __importDefault(require("./f"));
 var f2_1 = __importDefault(require("./f2"));
 var g1_1 = __importDefault(require("./g1"));
 var g2_1 = __importDefault(require("./g2"));
-var BLAKE2s = require('blake2s-js');
+var blake2xs_1 = require("@stablelib/blake2xs");
 function reverse(src) {
     var buffer = new Buffer(src.length);
     for (var i = 0, j = src.length - 1; i <= j; ++i, --j) {
@@ -19,6 +19,14 @@ function reverse(src) {
     return buffer;
 }
 exports.reverse = reverse;
+function uint8ArrayToBuffer(src) {
+    var buffer = new Buffer(src.length);
+    for (var i = 0; i < src.length; i++) {
+        buffer[i] = src[i];
+    }
+    return buffer;
+}
+exports.uint8ArrayToBuffer = uint8ArrayToBuffer;
 function bufferToArray(buf) {
     return buf.toJSON().data;
 }
@@ -106,39 +114,6 @@ function signPoP(privateKey, address) {
     return signatureBytes;
 }
 exports.signPoP = signPoP;
-function crh(domain, message, xofDigestLength) {
-    return Buffer.from((new BLAKE2s(32, {
-        nodeOffset: 0,
-        xofDigestLength: xofDigestLength,
-        personalization: domain
-    }))
-        .update(message)
-        .digest());
-}
-exports.crh = crh;
-function xof(domain, messageHash, xofDigestLength) {
-    var result = new Buffer(0);
-    for (var i = 0; i < 3; i++) {
-        var hashLength = 32;
-        if (i == 2 && (xofDigestLength % 32 !== 0)) {
-            hashLength = xofDigestLength % 32;
-        }
-        var hash = Buffer.from((new BLAKE2s(hashLength, {
-            personalization: domain,
-            xofDigestLength: xofDigestLength,
-            maxLeafLength: 32,
-            innerHashLength: 32,
-            fanOut: 0,
-            maxDepth: 0,
-            nodeOffset: i
-        }))
-            .update(messageHash)
-            .digest());
-        result = Buffer.concat([result, hash]);
-    }
-    return result;
-}
-exports.xof = xof;
 function tryAndIncrement(domain, message) {
     var xofDigestLength = 768 / 8;
     for (var i = 0; i < 256; i++) {
@@ -148,8 +123,7 @@ function tryAndIncrement(domain, message) {
             counter,
             message,
         ]);
-        var messageHash = crh(domain, messageWithCounter, xofDigestLength);
-        var hash = xof(domain, messageHash, xofDigestLength);
+        var hash = uint8ArrayToBuffer((new blake2xs_1.BLAKE2Xs(xofDigestLength, { personalization: domain })).update(messageWithCounter).digest());
         var possibleX0Bytes = hash.slice(0, hash.length / 2);
         possibleX0Bytes[possibleX0Bytes.length - 1] &= 1;
         var possibleX0Big = bufferToBig(possibleX0Bytes);

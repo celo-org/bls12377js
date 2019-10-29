@@ -5,7 +5,7 @@ import F2 from './f2'
 import G1 from './g1'
 import G2 from './g2'
 
-const BLAKE2s = require('blake2s-js')
+import { BLAKE2Xs } from '@stablelib/blake2xs'
 
 export function reverse(src: Buffer) {
   const buffer = new Buffer(src.length)
@@ -13,6 +13,15 @@ export function reverse(src: Buffer) {
   for (let i = 0, j = src.length - 1; i <= j; ++i, --j) {
     buffer[i] = src[j]
     buffer[j] = src[i]
+  }
+
+  return buffer
+}
+
+export function uint8ArrayToBuffer(src: Uint8Array): Buffer {
+  const buffer = new Buffer(src.length)
+  for (let i = 0; i < src.length; i++) {
+    buffer[i] = src[i]
   }
 
   return buffer
@@ -122,44 +131,6 @@ export function signPoP(privateKey: Buffer, address: Buffer): Buffer {
   return signatureBytes
 }
 
-export function crh(domain: Buffer, message: Buffer, xofDigestLength: number): Buffer {
-  return Buffer.from(
-    (new BLAKE2s(32, {
-      nodeOffset: 0,
-      xofDigestLength: xofDigestLength,
-      personalization: domain,
-    }))
-    .update(message)
-    .digest()
-  )
-}
-
-export function xof(domain: Buffer, messageHash: Buffer, xofDigestLength: number): Buffer {
-  let result = new Buffer(0)
-  for (let i = 0; i < 3; i++) {
-    let hashLength = 32
-    if (i == 2 && (xofDigestLength % 32 !== 0)) {
-      hashLength = xofDigestLength % 32
-    }
-
-    const hash = Buffer.from(
-      (new BLAKE2s(hashLength, { 
-        personalization: domain,
-        xofDigestLength: xofDigestLength,
-        maxLeafLength: 32,
-        innerHashLength: 32,
-        fanOut: 0,
-        maxDepth: 0,
-        nodeOffset: i,
-      }))
-      .update(messageHash)
-      .digest()
-    )
-    result = Buffer.concat([result, hash])
-  }
-  return result
-}
-
 export function tryAndIncrement(domain: Buffer, message: Buffer): G2 {
   const xofDigestLength = 768/8
   for (let i = 0; i < 256; i++) {
@@ -169,8 +140,7 @@ export function tryAndIncrement(domain: Buffer, message: Buffer): G2 {
       counter,
       message,
     ])
-    const messageHash = crh(domain, messageWithCounter, xofDigestLength)
-    const hash = xof(domain, messageHash, xofDigestLength)
+    const hash = uint8ArrayToBuffer((new BLAKE2Xs(xofDigestLength, { personalization: domain })).update(messageWithCounter).digest())
     const possibleX0Bytes = hash.slice(0, hash.length/2)
     possibleX0Bytes[possibleX0Bytes.length - 1] &= 1
     const possibleX0Big = bufferToBig(possibleX0Bytes)
