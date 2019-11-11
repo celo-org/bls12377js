@@ -37,12 +37,12 @@ describe('bls', () => {
   })
 
   it('should test proof of possession', () => {
-    const privateKey = new Buffer('60515f8c59451e04ab4b22b3fc9a196b2ad354e61aeca61256ab3d7b3468100b', 'hex')
+    const privateKey = new Buffer('37be4cee3e4322bcbcf4daf48c3315e2bb08b134edfcba2f9294940b2553700e', 'hex')
     const address = new Buffer('60515f8c59451e04ab4b22b3fc9a196b2ad354e6', 'hex')
     const publicKeyHex = BLS.privateToPublicBytes(privateKey).toString('hex')
-    expect(publicKeyHex).to.equal('c91e3ae9b4380143652cf199faeeab471e639c969e55275cf3bae66aad5d1c6d6f8bab3cb43fd20a78297cb0a8afe880')
+    expect(publicKeyHex).to.equal('5a9f0f97d8e00fcd54f31cf4bad81599306fefedbc1a29ac5e47261e5a44f6369bfbcd7dc77234913626608594bcf10049d8ab6dfc62b257e77c8775f2adc2e3e13683137c899cf2f9bd97adf8568649d1ac152762b664a37be865fa7f997401')
     const popHex = BLS.signPoP(privateKey, address).toString('hex')
-    expect(popHex).to.equal('18a20c95582661e366978a7de191ee195685c73b6f5f9ecfd160b10733a7048ab5ab381c381da69cb1de7e530901d500abf4da4a177a6a250d9f4be98e4df21bc9d54f4d4318adaa3eab61ae139e1ec4afc410c44446eab4130196e3dc983201')
+    expect(popHex).to.equal('ee4d9108ae684014dbc080d7bbf201e86361de6f12337715f344fc7e104881da2df2a0a363bacc303219ba0be1d09a81')
   })
 
   it('should test many proofs of possession', () => {
