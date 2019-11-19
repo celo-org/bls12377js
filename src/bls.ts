@@ -114,7 +114,7 @@ export function padBytes(buf: Buffer, expectedLength: number): Buffer {
 
 export function privateToPublicBytes(privateKey: Buffer): Buffer {
   const privateKeyBig = bufferToBig(privateKey)
-  const publicKeyBytes = compressG1(g1Generator().scalarMult(privateKeyBig))
+  const publicKeyBytes = compressG2(g2Generator().scalarMult(privateKeyBig))
   return publicKeyBytes
 }
 
@@ -125,14 +125,13 @@ export function signPoP(privateKey: Buffer, address: Buffer): Buffer {
     address,
   )
   const signedMessage = messagePoint.scalarMult(privateKeyBig)
-  const scalingFactor = Defs.blsX.multiply(Defs.blsX).subtract(bigInt(1)).multiply(3).multiply(Defs.g2Cofactor)
-  const signedMessageScaled = signedMessage.scalarMult(scalingFactor)
-  const signatureBytes = compressG2(signedMessageScaled)
+  const signedMessageScaled = signedMessage.scalarMult(Defs.g1Cofactor)
+  const signatureBytes = compressG1(signedMessageScaled)
   return signatureBytes
 }
 
-export function tryAndIncrement(domain: Buffer, message: Buffer): G2 {
-  const xofDigestLength = 768/8
+export function tryAndIncrement(domain: Buffer, message: Buffer): G1 {
+  const xofDigestLength = 384/8
   for (let i = 0; i < 256; i++) {
     const counter = new Buffer(1)
     counter[0] = i
@@ -141,48 +140,24 @@ export function tryAndIncrement(domain: Buffer, message: Buffer): G2 {
       message,
     ])
     const hash = uint8ArrayToBuffer((new BLAKE2Xs(xofDigestLength, { personalization: domain })).update(messageWithCounter).digest())
-    const possibleX0Bytes = hash.slice(0, hash.length/2)
-    possibleX0Bytes[possibleX0Bytes.length - 1] &= 1
-    const possibleX0Big = bufferToBig(possibleX0Bytes)
-    let possibleX0
+    const possibleXBytes = hash
+    possibleXBytes[possibleXBytes.length - 1] &= 1
+    const possibleXBig = bufferToBig(possibleXBytes)
+    let possibleX
     try {
-      possibleX0 = F.fromBig(possibleX0Big)
+      possibleX = F.fromBig(possibleXBig)
     } catch(e) {
       continue
     }
-    const possibleX1Bytes = hash.slice(hash.length/2, hash.length)
-    const greatest = (possibleX1Bytes[possibleX1Bytes.length - 1] & 2) == 2
-    possibleX1Bytes[possibleX1Bytes.length - 1] &= 1
-    const possibleX1Big = bufferToBig(possibleX1Bytes)
-    let possibleX1
-    try {
-      possibleX1 = F.fromBig(possibleX1Big)
-    } catch(e) {
-      continue
-    }
+    const greatest = (possibleXBytes[possibleXBytes.length - 1] & 2) == 2
 
-    const possibleX = F2.fromElements(
-      possibleX0,
-      possibleX1,
-    )
     let y
     try {
-      y = (possibleX.multiply(possibleX).multiply(possibleX).add(F2.fromElements(
-        F.fromBig(Defs.bTwist[0]),
-        F.fromBig(Defs.bTwist[1]),
-      ))).sqrt()
-      const negy = y.negate().toFs()
-
-      const negy0 = negy[0].toBig()
-      const negy1 = negy[1].toBig()
+      y = (possibleX.multiply(possibleX).multiply(possibleX).add(F.fromBig(bigInt(1)))).sqrt()
+      const negy = y.negate().toBig()
 
       let negyIsGreatest = false
-      if (negy1.compare(getMiddlePoint()) > 0) {
-        negyIsGreatest = true
-      } else if (
-        (negy1.compare(getMiddlePoint()) == 0) &&
-        (negy0.compare(getMiddlePoint()) > 0)
-      ) {
+      if (negy.compare(getMiddlePoint()) > 0) {
         negyIsGreatest = true
       }
       if (negyIsGreatest && greatest) {
@@ -195,7 +170,7 @@ export function tryAndIncrement(domain: Buffer, message: Buffer): G2 {
       continue
     }
 
-    return G2.fromElements(
+    return G1.fromElements(
       possibleX,
       y
     )

@@ -100,7 +100,7 @@ function padBytes(buf, expectedLength) {
 exports.padBytes = padBytes;
 function privateToPublicBytes(privateKey) {
     var privateKeyBig = bufferToBig(privateKey);
-    var publicKeyBytes = compressG1(g1Generator().scalarMult(privateKeyBig));
+    var publicKeyBytes = compressG2(g2Generator().scalarMult(privateKeyBig));
     return publicKeyBytes;
 }
 exports.privateToPublicBytes = privateToPublicBytes;
@@ -108,14 +108,13 @@ function signPoP(privateKey, address) {
     var privateKeyBig = bufferToBig(privateKey);
     var messagePoint = tryAndIncrement(new Buffer('ULforpop'), address);
     var signedMessage = messagePoint.scalarMult(privateKeyBig);
-    var scalingFactor = defs_1.Defs.blsX.multiply(defs_1.Defs.blsX).subtract(bigInt(1)).multiply(3).multiply(defs_1.Defs.g2Cofactor);
-    var signedMessageScaled = signedMessage.scalarMult(scalingFactor);
-    var signatureBytes = compressG2(signedMessageScaled);
+    var signedMessageScaled = signedMessage.scalarMult(defs_1.Defs.g1Cofactor);
+    var signatureBytes = compressG1(signedMessageScaled);
     return signatureBytes;
 }
 exports.signPoP = signPoP;
 function tryAndIncrement(domain, message) {
-    var xofDigestLength = 768 / 8;
+    var xofDigestLength = 384 / 8;
     for (var i = 0; i < 256; i++) {
         var counter = new Buffer(1);
         counter[0] = i;
@@ -124,40 +123,23 @@ function tryAndIncrement(domain, message) {
             message,
         ]);
         var hash = uint8ArrayToBuffer((new blake2xs_1.BLAKE2Xs(xofDigestLength, { personalization: domain })).update(messageWithCounter).digest());
-        var possibleX0Bytes = hash.slice(0, hash.length / 2);
-        possibleX0Bytes[possibleX0Bytes.length - 1] &= 1;
-        var possibleX0Big = bufferToBig(possibleX0Bytes);
-        var possibleX0 = void 0;
+        var possibleXBytes = hash;
+        possibleXBytes[possibleXBytes.length - 1] &= 1;
+        var possibleXBig = bufferToBig(possibleXBytes);
+        var possibleX = void 0;
         try {
-            possibleX0 = f_1["default"].fromBig(possibleX0Big);
+            possibleX = f_1["default"].fromBig(possibleXBig);
         }
         catch (e) {
             continue;
         }
-        var possibleX1Bytes = hash.slice(hash.length / 2, hash.length);
-        var greatest = (possibleX1Bytes[possibleX1Bytes.length - 1] & 2) == 2;
-        possibleX1Bytes[possibleX1Bytes.length - 1] &= 1;
-        var possibleX1Big = bufferToBig(possibleX1Bytes);
-        var possibleX1 = void 0;
-        try {
-            possibleX1 = f_1["default"].fromBig(possibleX1Big);
-        }
-        catch (e) {
-            continue;
-        }
-        var possibleX = f2_1["default"].fromElements(possibleX0, possibleX1);
+        var greatest = (possibleXBytes[possibleXBytes.length - 1] & 2) == 2;
         var y = void 0;
         try {
-            y = (possibleX.multiply(possibleX).multiply(possibleX).add(f2_1["default"].fromElements(f_1["default"].fromBig(defs_1.Defs.bTwist[0]), f_1["default"].fromBig(defs_1.Defs.bTwist[1])))).sqrt();
-            var negy = y.negate().toFs();
-            var negy0 = negy[0].toBig();
-            var negy1 = negy[1].toBig();
+            y = (possibleX.multiply(possibleX).multiply(possibleX).add(f_1["default"].fromBig(bigInt(1)))).sqrt();
+            var negy = y.negate().toBig();
             var negyIsGreatest = false;
-            if (negy1.compare(getMiddlePoint()) > 0) {
-                negyIsGreatest = true;
-            }
-            else if ((negy1.compare(getMiddlePoint()) == 0) &&
-                (negy0.compare(getMiddlePoint()) > 0)) {
+            if (negy.compare(getMiddlePoint()) > 0) {
                 negyIsGreatest = true;
             }
             if (negyIsGreatest && greatest) {
@@ -170,7 +152,7 @@ function tryAndIncrement(domain, message) {
         catch (e) {
             continue;
         }
-        return g2_1["default"].fromElements(possibleX, y);
+        return g1_1["default"].fromElements(possibleX, y);
     }
     throw new Error('couldn\'t sign pop');
 }
