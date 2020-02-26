@@ -60,6 +60,27 @@ function compressG1(g) {
     return x;
 }
 exports.compressG1 = compressG1;
+function decompressG1(bytes) {
+    var possibleXBytes = bytes;
+    var greatest = (possibleXBytes[possibleXBytes.length - 1] & 0x80) == 0x80;
+    possibleXBytes[possibleXBytes.length - 1] &= 1;
+    var possibleXBig = bufferToBig(possibleXBytes);
+    var possibleX = f_1["default"].fromBig(possibleXBig);
+    var y = (possibleX.multiply(possibleX).multiply(possibleX).add(f_1["default"].fromBig(bigInt(1)))).sqrt();
+    var negy = y.negate().toBig();
+    var negyIsGreatest = false;
+    if (negy.compare(getMiddlePoint()) > 0) {
+        negyIsGreatest = true;
+    }
+    if (negyIsGreatest && greatest) {
+        y = y.negate();
+    }
+    if (!negyIsGreatest && !greatest) {
+        y = y.negate();
+    }
+    return g1_1["default"].fromElements(possibleX, y);
+}
+exports.decompressG1 = decompressG1;
 function compressG2(g) {
     var gAffine = g.toAffine();
     var x = gAffine.x().toFs();
@@ -79,6 +100,38 @@ function compressG2(g) {
     return xBytes;
 }
 exports.compressG2 = compressG2;
+function decompressG2(bytes) {
+    var possibleX0Bytes = bytes.slice(0, bytes.length / 2);
+    possibleX0Bytes[possibleX0Bytes.length - 1] &= 1;
+    var possibleX0Big = bufferToBig(possibleX0Bytes);
+    var possibleX0 = f_1["default"].fromBig(possibleX0Big);
+    var possibleX1Bytes = bytes.slice(bytes.length / 2, bytes.length);
+    var greatest = (possibleX1Bytes[possibleX1Bytes.length - 1] & 0x80) == 0x80;
+    possibleX1Bytes[possibleX1Bytes.length - 1] &= 1;
+    var possibleX1Big = bufferToBig(possibleX1Bytes);
+    var possibleX1 = f_1["default"].fromBig(possibleX1Big);
+    var possibleX = f2_1["default"].fromElements(possibleX0, possibleX1);
+    var y = (possibleX.multiply(possibleX).multiply(possibleX).add(f2_1["default"].fromElements(f_1["default"].fromBig(defs_1.Defs.bTwist[0]), f_1["default"].fromBig(defs_1.Defs.bTwist[1])))).sqrt();
+    var negy = y.negate().toFs();
+    var negy0 = negy[0].toBig();
+    var negy1 = negy[1].toBig();
+    var negyIsGreatest = false;
+    if (negy1.compare(getMiddlePoint()) > 0) {
+        negyIsGreatest = true;
+    }
+    else if ((negy1.compare(getMiddlePoint()) == 0) &&
+        (negy0.compare(getMiddlePoint()) > 0)) {
+        negyIsGreatest = true;
+    }
+    if (negyIsGreatest && greatest) {
+        y = y.negate();
+    }
+    if (!negyIsGreatest && !greatest) {
+        y = y.negate();
+    }
+    return g2_1["default"].fromElements(possibleX, y);
+}
+exports.decompressG2 = decompressG2;
 function g1Generator() {
     return g1_1["default"].fromElements(f_1["default"].fromBig(defs_1.Defs.g1Generator[0]), f_1["default"].fromBig(defs_1.Defs.g1Generator[1]));
 }
@@ -124,6 +177,7 @@ function tryAndIncrement(domain, message) {
         ]);
         var hash = uint8ArrayToBuffer((new blake2xs_1.BLAKE2Xs(xofDigestLength, { personalization: domain })).update(messageWithCounter).digest());
         var possibleXBytes = hash;
+        var greatest = (possibleXBytes[possibleXBytes.length - 1] & 2) == 2;
         possibleXBytes[possibleXBytes.length - 1] &= 1;
         var possibleXBig = bufferToBig(possibleXBytes);
         var possibleX = void 0;
@@ -133,7 +187,6 @@ function tryAndIncrement(domain, message) {
         catch (e) {
             continue;
         }
-        var greatest = (possibleXBytes[possibleXBytes.length - 1] & 2) == 2;
         var y = void 0;
         try {
             y = (possibleX.multiply(possibleX).multiply(possibleX).add(f_1["default"].fromBig(bigInt(1)))).sqrt();

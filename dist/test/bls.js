@@ -67,4 +67,17 @@ describe('bls', function () {
             }
         }
     });
+    it('should test compression', function () {
+        var privateKey = new Buffer('37be4cee3e4322bcbcf4daf48c3315e2bb08b134edfcba2f9294940b2553700e', 'hex');
+        var privateKeyBig = __1.BLS.bufferToBig(privateKey);
+        var publicKey = __1.BLS.g2Generator().scalarMult(privateKeyBig);
+        var publicKeyCompressed = __1.BLS.compressG2(publicKey);
+        var publicKey2 = __1.BLS.decompressG2(publicKeyCompressed);
+        chai_1.expect(publicKey.toAffine()).to.eql(publicKey2.toAffine());
+        var exampleData = new Buffer('32333435', 'hex');
+        var messagePoint = __1.BLS.tryAndIncrement(new Buffer('ULforpop'), exampleData);
+        var messagePointCompressed = __1.BLS.compressG1(messagePoint);
+        var messagePoint2 = __1.BLS.decompressG1(messagePointCompressed);
+        chai_1.expect(messagePoint.toAffine()).to.eql(messagePoint2.toAffine());
+    });
 });

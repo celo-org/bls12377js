@@ -65,4 +65,22 @@ describe('bls', () => {
     }
   })
 
+  it('should test compression', () => {
+    const privateKey = new Buffer('37be4cee3e4322bcbcf4daf48c3315e2bb08b134edfcba2f9294940b2553700e', 'hex')
+    const privateKeyBig = BLS.bufferToBig(privateKey)
+    const publicKey = BLS.g2Generator().scalarMult(privateKeyBig)
+    const publicKeyCompressed = BLS.compressG2(publicKey)
+    const publicKey2 = BLS.decompressG2(publicKeyCompressed)
+    expect(publicKey.toAffine()).to.eql(publicKey2.toAffine())
+
+    const exampleData = new Buffer('32333435', 'hex')
+    const messagePoint = BLS.tryAndIncrement(
+      new Buffer('ULforpop'),
+      exampleData,
+    )
+    const messagePointCompressed = BLS.compressG1(messagePoint)
+    const messagePoint2 = BLS.decompressG1(messagePointCompressed)
+    expect(messagePoint.toAffine()).to.eql(messagePoint2.toAffine())
+  })
+
 })
