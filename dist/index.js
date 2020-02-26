@@ -20,3 +20,5 @@ var g2_1 = __importDefault(require("./src/g2"));
 exports.G2 = g2_1["default"];
 var BLS = __importStar(require("./src/bls"));
 exports.BLS = BLS;
+var defs_1 = require("./src/defs");
+exports.Defs = defs_1.Defs;
