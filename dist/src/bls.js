@@ -167,7 +167,7 @@ function signPoP(privateKey, address) {
 }
 exports.signPoP = signPoP;
 function tryAndIncrement(domain, message) {
-    var xofDigestLength = 384 / 8;
+    var xofDigestLength = 512 / 8;
     for (var i = 0; i < 256; i++) {
         var counter = new Buffer(1);
         counter[0] = i;
@@ -176,7 +176,7 @@ function tryAndIncrement(domain, message) {
             message,
         ]);
         var hash = uint8ArrayToBuffer((new blake2xs_1.BLAKE2Xs(xofDigestLength, { personalization: domain })).update(messageWithCounter).digest());
-        var possibleXBytes = hash;
+        var possibleXBytes = hash.slice(0, 384 / 8);
         var greatest = (possibleXBytes[possibleXBytes.length - 1] & 2) == 2;
         possibleXBytes[possibleXBytes.length - 1] &= 1;
         var possibleXBig = bufferToBig(possibleXBytes);

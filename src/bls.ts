@@ -202,7 +202,7 @@ export function signPoP(privateKey: Buffer, address: Buffer): Buffer {
 }
 
 export function tryAndIncrement(domain: Buffer, message: Buffer): G1 {
-  const xofDigestLength = 384/8
+  const xofDigestLength = 512/8
   for (let i = 0; i < 256; i++) {
     const counter = new Buffer(1)
     counter[0] = i
@@ -211,7 +211,7 @@ export function tryAndIncrement(domain: Buffer, message: Buffer): G1 {
       message,
     ])
     const hash = uint8ArrayToBuffer((new BLAKE2Xs(xofDigestLength, { personalization: domain })).update(messageWithCounter).digest())
-    const possibleXBytes = hash
+    const possibleXBytes = hash.slice(0, 384/8)
     const greatest = (possibleXBytes[possibleXBytes.length - 1] & 2) == 2
     possibleXBytes[possibleXBytes.length - 1] &= 1
     const possibleXBig = bufferToBig(possibleXBytes)
