@@ -212,7 +212,7 @@ export function tryAndIncrement(domain: Buffer, message: Buffer): G1 {
     ])
     const hash = uint8ArrayToBuffer((new BLAKE2Xs(xofDigestLength, { personalization: domain })).update(messageWithCounter).digest())
     const possibleXBytes = hash.slice(0, 384/8)
-    const greatest = (possibleXBytes[possibleXBytes.length - 1] & 2) == 2
+    const greatest = (possibleXBytes[possibleXBytes.length - 1] & 128) == 128
     possibleXBytes[possibleXBytes.length - 1] &= 1
     const possibleXBig = bufferToBig(possibleXBytes)
     let possibleX
