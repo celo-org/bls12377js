@@ -177,7 +177,7 @@ function tryAndIncrement(domain, message) {
         ]);
         var hash = uint8ArrayToBuffer((new blake2xs_1.BLAKE2Xs(xofDigestLength, { personalization: domain })).update(messageWithCounter).digest());
         var possibleXBytes = hash.slice(0, 384 / 8);
-        var greatest = (possibleXBytes[possibleXBytes.length - 1] & 2) == 2;
+        var greatest = (possibleXBytes[possibleXBytes.length - 1] & 128) == 128;
         possibleXBytes[possibleXBytes.length - 1] &= 1;
         var possibleXBig = bufferToBig(possibleXBytes);
         var possibleX = void 0;
