@@ -93,7 +93,7 @@ function compressG2(g) {
     if (y1.compare(getMiddlePoint()) > 0) {
         xBytes[xBytes.length - 1] |= 0x80;
     }
-    else if ((y1.compare(y0) == 0) &&
+    else if ((y1.compare(bigInt(0)) == 0) &&
         (y0.compare(getMiddlePoint()) > 0)) {
         xBytes[xBytes.length - 1] |= 0x80;
     }
