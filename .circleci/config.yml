@@ -25,6 +25,7 @@ jobs:
               set -euo pipefail
               cd ~/bls12377js
               npm install
+              npm install -g typescript
               tsc
       - persist_to_workspace:
           root: .
