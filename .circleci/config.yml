@@ -1,20 +1,21 @@
 version: 2
 
 defaults: &defaults
-  docker:
-    - image: celohq/node8:gcloud
-  working_directory: ~/bls12377js
 
 jobs:
   unit-tests:
-    <<: *defaults
+    docker:
+      - image: celohq/node10:gcloud
+    working_directory: ~/bls12377js
     steps:
       - attach_workspace:
           at: .
       - run: cd ~/bls12377js && npm test
 
   checkout-and-install:
-    <<: *defaults
+    docker:
+      - image: celohq/node10:gcloud
+    working_directory: ~/bls12377js
     steps:
       - checkout
       - run:
