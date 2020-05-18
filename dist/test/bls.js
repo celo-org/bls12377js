@@ -43,7 +43,7 @@ describe('bls', function () {
         var privateKey = new Buffer('e3990a59d80a91429406be0000677a7eea8b96c5b429c70c71dabc3b7cf80d0a', 'hex');
         var address = new Buffer('a0Af2E71cECc248f4a7fD606F203467B500Dd53B', 'hex');
         var popHex = __1.BLS.signPoP(privateKey, address).toString('hex');
-        chai_1.expect(popHex).to.equal('90e5f392c9ad11c7e5ea95e683e0977963b56dcf950cfb28e9780edc7cc527f99fd3e2abfa5ff768a96745704069c580');
+        chai_1.expect(popHex).to.equal('90e5f392c9ad11c7e5ea95e683e0977963b56dcf950cfb28e9780edc7cc527f99fd3e2abfa5ff768a96745704069c500');
     });
     it.skip('should test many proofs of possession', function () {
         var csvContents = fs.readFileSync('test/pops.csv').toString();

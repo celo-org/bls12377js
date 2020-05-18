@@ -11,19 +11,21 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - run: cd ~/bls12377js && npm test
+      - run: 
+          name: Test
+          command: cd ~/bls12377js && npm test
 
   checkout-and-install:
     <<: *defaults
     steps:
       - checkout
-      -run:
-        name: Install
-        command: |
-            set -euo pipefail
-            cd ~/bls12377js
-            npm install
-            tsc
+      - run:
+          name: Install
+          command: |
+              set -euo pipefail
+              cd ~/bls12377js
+              npm install
+              npx tsc
       - persist_to_workspace:
           root: .
           paths: .
