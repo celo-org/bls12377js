@@ -2,7 +2,7 @@ version: 2
 
 defaults: &defaults
   docker:
-    - image: celohq/node10-gcloud:v3
+    - image: us.gcr.io/celo-testnet/circleci-node12:1.0.0
   working_directory: ~/bls12377js
 
 jobs:
