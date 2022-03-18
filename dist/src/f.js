@@ -108,7 +108,7 @@ var F = /** @class */ (function () {
         return F.fromBig(bigInt(this.num));
     };
     F.prototype.toString = function (base) {
-        return "F(" + this.num.toString(base) + ")";
+        return "F(".concat(this.num.toString(base), ")");
     };
     return F;
 }());

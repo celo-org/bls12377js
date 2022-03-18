@@ -190,10 +190,19 @@ export function privateToPublicBytes(privateKey: Buffer): Buffer {
 }
 
 export function signPoP(privateKey: Buffer, address: Buffer): Buffer {
+  return signPoPCommon(privateKey, address, true);
+}
+
+export function signPoPNonCompat(privateKey: Buffer, address: Buffer): Buffer {
+  return signPoPCommon(privateKey, address, false);
+}
+
+export function signPoPCommon(privateKey: Buffer, address: Buffer, compat: Boolean): Buffer {
   const privateKeyBig = bufferToBig(privateKey)
   const messagePoint = tryAndIncrement(
     new Buffer('ULforpop'),
     address,
+    compat,
   )
   const signedMessage = messagePoint.scalarMult(privateKeyBig)
   const signedMessageScaled = signedMessage.scalarMult(Defs.g1Cofactor)
@@ -201,7 +210,7 @@ export function signPoP(privateKey: Buffer, address: Buffer): Buffer {
   return signatureBytes
 }
 
-export function tryAndIncrement(domain: Buffer, message: Buffer): G1 {
+export function tryAndIncrement(domain: Buffer, message: Buffer, compat: Boolean): G1 {
   const xofDigestLength = 512/8
   for (let i = 0; i < 256; i++) {
     const counter = new Buffer(1)
@@ -212,7 +221,8 @@ export function tryAndIncrement(domain: Buffer, message: Buffer): G1 {
     ])
     const hash = uint8ArrayToBuffer((new BLAKE2Xs(xofDigestLength, { personalization: domain })).update(messageWithCounter).digest())
     const possibleXBytes = hash.slice(0, 384/8)
-    const greatest = (possibleXBytes[possibleXBytes.length - 1] & 0x80) == 0x80
+    const signPosition = compat ? 2 : 0x80;
+    const greatest = (possibleXBytes[possibleXBytes.length - 1] & signPosition) == signPosition
     possibleXBytes[possibleXBytes.length - 1] &= 1
     const possibleXBig = bufferToBig(possibleXBytes)
     let possibleX
