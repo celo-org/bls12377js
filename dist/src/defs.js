@@ -1,5 +1,6 @@
 "use strict";
 exports.__esModule = true;
+exports.Defs = void 0;
 var bigInt = require("big-integer");
 exports.Defs = {
     modulus: bigInt('258664426012969094010652733694893533536393512754914660539884262666720468348340822774968888139573360124440321458177'),

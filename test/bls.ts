@@ -40,10 +40,10 @@ describe('bls', () => {
     const privateKey = new Buffer('e3990a59d80a91429406be0000677a7eea8b96c5b429c70c71dabc3b7cf80d0a', 'hex')
     const address = new Buffer('a0Af2E71cECc248f4a7fD606F203467B500Dd53B', 'hex')
     const popHex = BLS.signPoP(privateKey, address).toString('hex')
-    expect(popHex).to.equal('90e5f392c9ad11c7e5ea95e683e0977963b56dcf950cfb28e9780edc7cc527f99fd3e2abfa5ff768a96745704069c500')
+    expect(popHex).to.equal('90e5f392c9ad11c7e5ea95e683e0977963b56dcf950cfb28e9780edc7cc527f99fd3e2abfa5ff768a96745704069c580')
   })
 
-  it.skip('should test many proofs of possession', () => {
+  it('should test many proofs of possession', () => {
     const csvContents = fs.readFileSync('test/pops.csv').toString()
     const lines = csvContents.trim().split('\n')
     for (let i = 0; i < lines.length; i++) {
@@ -52,8 +52,28 @@ describe('bls', () => {
         const privateKey = new Buffer(line[0], 'hex')
         const publicKeyHex = BLS.privateToPublicBytes(privateKey).toString('hex')
         expect(publicKeyHex).to.equal(line[1])
-        const address = new Buffer('47e172F6CfB6c7D01C1574fa3E2Be7CC73269D95', 'hex')
+        const address = new Buffer('60515f8c59451e04ab4b22b3fc9a196b2ad354e6', 'hex')
         const popHex = BLS.signPoP(privateKey, address).toString('hex')
+        expect(popHex).to.equal(line[2])
+      } catch(e) {
+        console.log(`error: ${e}`)
+        console.log(`problematic line: ${line}`)
+        throw e;
+      }
+    }
+  })
+
+  it('should test many proofs of possession non compat', () => {
+    const csvContents = fs.readFileSync('test/pops_non_compat.csv').toString()
+    const lines = csvContents.trim().split('\n')
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].split(',')
+      try {
+        const privateKey = new Buffer(line[0], 'hex')
+        const publicKeyHex = BLS.privateToPublicBytes(privateKey).toString('hex')
+        expect(publicKeyHex).to.equal(line[1])
+        const address = new Buffer('60515f8c59451e04ab4b22b3fc9a196b2ad354e6', 'hex')
+        const popHex = BLS.signPoPNonCompat(privateKey, address).toString('hex')
         expect(popHex).to.equal(line[2])
       } catch(e) {
         console.log(`error: ${e}`)
@@ -75,6 +95,7 @@ describe('bls', () => {
     const messagePoint = BLS.tryAndIncrement(
       new Buffer('ULforpop'),
       exampleData,
+      true,
     )
     const messagePointCompressed = BLS.compressG1(messagePoint)
     const messagePoint2 = BLS.decompressG1(messagePointCompressed)

@@ -122,7 +122,7 @@ var Group = /** @class */ (function () {
         return p;
     };
     Group.prototype.toString = function (base) {
-        return "G(" + this.x().toString(base) + ", " + this.y().toString(base) + ", " + this.z().toString(base) + ")";
+        return "G(".concat(this.x().toString(base), ", ").concat(this.y().toString(base), ", ").concat(this.z().toString(base), ")");
     };
     return Group;
 }());

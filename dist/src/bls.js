@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
+exports.tryAndIncrement = exports.signPoPCommon = exports.signPoPNonCompat = exports.signPoP = exports.privateToPublicBytes = exports.padBytes = exports.g2Generator = exports.g1Generator = exports.decompressG2 = exports.compressG2 = exports.decompressG1 = exports.compressG1 = exports.getMiddlePoint = exports.bigToBuffer = exports.bufferToBig = exports.arrayToBuffer = exports.bufferToArray = exports.uint8ArrayToBuffer = exports.reverse = void 0;
 var defs_1 = require("./defs");
 var bigInt = require("big-integer");
 var f_1 = __importDefault(require("./f"));
@@ -158,15 +159,23 @@ function privateToPublicBytes(privateKey) {
 }
 exports.privateToPublicBytes = privateToPublicBytes;
 function signPoP(privateKey, address) {
+    return signPoPCommon(privateKey, address, true);
+}
+exports.signPoP = signPoP;
+function signPoPNonCompat(privateKey, address) {
+    return signPoPCommon(privateKey, address, false);
+}
+exports.signPoPNonCompat = signPoPNonCompat;
+function signPoPCommon(privateKey, address, compat) {
     var privateKeyBig = bufferToBig(privateKey);
-    var messagePoint = tryAndIncrement(new Buffer('ULforpop'), address);
+    var messagePoint = tryAndIncrement(new Buffer('ULforpop'), address, compat);
     var signedMessage = messagePoint.scalarMult(privateKeyBig);
     var signedMessageScaled = signedMessage.scalarMult(defs_1.Defs.g1Cofactor);
     var signatureBytes = compressG1(signedMessageScaled);
     return signatureBytes;
 }
-exports.signPoP = signPoP;
-function tryAndIncrement(domain, message) {
+exports.signPoPCommon = signPoPCommon;
+function tryAndIncrement(domain, message, compat) {
     var xofDigestLength = 512 / 8;
     for (var i = 0; i < 256; i++) {
         var counter = new Buffer(1);
@@ -177,7 +186,8 @@ function tryAndIncrement(domain, message) {
         ]);
         var hash = uint8ArrayToBuffer((new blake2xs_1.BLAKE2Xs(xofDigestLength, { personalization: domain })).update(messageWithCounter).digest());
         var possibleXBytes = hash.slice(0, 384 / 8);
-        var greatest = (possibleXBytes[possibleXBytes.length - 1] & 0x80) == 0x80;
+        var signPosition = compat ? 2 : 0x80;
+        var greatest = (possibleXBytes[possibleXBytes.length - 1] & signPosition) == signPosition;
         possibleXBytes[possibleXBytes.length - 1] &= 1;
         var possibleXBig = bufferToBig(possibleXBytes);
         var possibleX = void 0;
