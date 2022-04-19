@@ -96,7 +96,7 @@ var F2 = /** @class */ (function () {
         return [this.c0.clone(), this.c1.clone()];
     };
     F2.prototype.toString = function (base) {
-        return "F2(".concat(this.c0.toString(base), ", ").concat(this.c1.toString(base), ")");
+        return "F2(" + this.c0.toString(base) + ", " + this.c1.toString(base) + ")";
     };
     return F2;
 }());
