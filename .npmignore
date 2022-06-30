@@ -1,0 +1,6 @@
+node_modules/
+src/
+index.ts
+tsconfig.json
+test/
+.circleci/
