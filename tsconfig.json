@@ -6,7 +6,10 @@
     "noUnusedParameters": true,
     "strictPropertyInitialization": true,
     "esModuleInterop": true,
-    "strict": true
+    "strict": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
   },
   "exclude": [
     "node_modules",
