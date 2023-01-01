@@ -9,3 +9,4 @@ bls12377js is licensed under either of the following licenses, at your discretio
 Apache License Version 2.0 (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0)
 MIT license (LICENSE-MIT or http://opensource.org/licenses/MIT)
 Unless you explicitly state otherwise, any contribution submitted for inclusion in bls12377js by you shall be dual licensed as above (as defined in the Apache v2 License), without any additional terms or conditions.
+test
